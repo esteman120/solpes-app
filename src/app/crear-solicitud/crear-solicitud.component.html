@@ -26,14 +26,14 @@
                 <input type="text" class="form-control" id="solicitante" value="{{nombreUsuario}}" formControlName="solicitante" [attr.disabled]="true">
             </div>
             <!-- <label for="empresa" class="col-form-label">Empresa</label><span class="asterisco-obligatorio">*</span>
-      <div class="col-md-5">
-        <select id="empresa" formControlName="empresa" class="form-control">
-          <option value="">Seleccione</option>
-          <option *ngFor="let empresa of empresas" [value]="empresa.id" [text]="empresa.nombre">
-            {{empresa.nombre}}
-          </option>
-        </select>
-      </div> -->
+        <div class="col-md-5">
+          <select id="empresa" formControlName="empresa" class="form-control">
+            <option value="">Seleccione</option>
+            <option *ngFor="let empresa of empresas" [value]="empresa.id" [text]="empresa.nombre">
+              {{empresa.nombre}}
+            </option>
+          </select>
+        </div> -->
         </div>
         <div class="form-group row">
             <div class="col-md-6">
@@ -47,11 +47,11 @@
             <div class="col-md-6">
                 <label for="pais" class="col-form-label">País</label><span class="asterisco-obligatorio">*</span>
                 <select id="pais" name="pais" formControlName="pais" class="form-control" (change)="filtrarSubcategorias()">
-          <option value="">Seleccione</option>
-          <option *ngFor="let pais of paises" [ngValue]="pais" [text]="pais.nombre">
-            {{pais.nombre}}
-          </option>
-        </select>
+            <option value="">Seleccione</option>
+            <option *ngFor="let pais of paises" [ngValue]="pais" [text]="pais.nombre">
+              {{pais.nombre}}
+            </option>
+          </select>
             </div>
         </div>
 
@@ -59,20 +59,20 @@
             <div class="col-md-6">
                 <label for="categoria" class="col-form-label">Categoría</label><span class="asterisco-obligatorio">*</span>
                 <select id="categoria" name="categoria" formControlName="categoria" class="form-control" (change)="filtrarSubcategorias()">
-          <option value="">Seleccione</option>
-          <option *ngFor="let categoria of categorias" [ngValue]="categoria" [text]="categoria.nombre">
-            {{categoria.nombre}}
-          </option>
-        </select>
+            <option value="">Seleccione</option>
+            <option *ngFor="let categoria of categorias" [ngValue]="categoria" [text]="categoria.nombre">
+              {{categoria.nombre}}
+            </option>
+          </select>
             </div>
             <div class="col-md-6">
                 <label for="subcategoria" class="col-form-label">Subcategoría</label><span class="asterisco-obligatorio">*</span>
                 <select id="subcategoria" name="subcategoria" formControlName="subcategoria" class="form-control" (change)="cargarCondicionesContractuales()">
-          <option value="">Seleccione</option>
-          <option *ngFor="let subcategoria of subcategorias" [ngValue]="subcategoria" [text]="subcategoria.nombre">
-            {{subcategoria.nombre}}
-          </option>
-        </select>
+            <option value="">Seleccione</option>
+            <option *ngFor="let subcategoria of subcategorias" [ngValue]="subcategoria" [text]="subcategoria.nombre">
+              {{subcategoria.nombre}}
+            </option>
+          </select>
             </div>
         </div>
 
@@ -227,18 +227,9 @@
                         <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplayCTS">
                             <th class="columnaServicios" mat-header-cell *matHeaderCellDef> {{column}} </th>
                             <div *ngIf="column == 'Acciones'; else contenidoCTS">
-
-                                <td mat-cell *matCellDef="let element"><img src="https://isaempresas.sharepoint.com/sites/INTERNEXA/Solpes/ImagenesSolpes/aplicacion/editar.png"  class="icono-tabla"  alt="editar"  (click)="editarServicios(element, templateCondicionesTecnicasServicios);"  tooltip="Editar servicio"
-                                        placement="bottom"  />&nbsp;
-                                    <img src="https://isaempresas.sharepoint.com/sites/INTERNEXA/Solpes/ImagenesSolpes/aplicacion/borrar.png"  class="icono-tabla"  alt="borrar"  (click)="borrarServicios(element);"  tooltip="Borrar servicio"
-                                        <td mat-cell *matCellDef="let element"><img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/editar.png"  class="icono-tabla"  alt="editar"  (click)="editarServicios(element, templateCondicionesTecnicasServicios);"
-                                             tooltip="Editar servicio" placement="bottom"  />&nbsp;<img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/borrar.png"  class="icono-tabla"  alt="borrar"  (click)="borrarServicios(element);"
-                                             tooltip="Borrar servicio" placement="bottom"  /></td>
-
-                                        <td mat-cell *matCellDef="let element"><img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/editar.png" class="icono-tabla" alt="editar" (click)="editarServicios(element, templateCondicionesTecnicasServicios);"
-                                                tooltip="Editar servicio" placement="bottom" />&nbsp;<img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/borrar.png" class="icono-tabla" alt="borrar" (click)="borrarServicios(element);"
-                                                tooltip="Borrar servicio" placement="bottom" /></td>
-
+                                <td mat-cell *matCellDef="let element"><img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/editar.png"  class="icono-tabla"  alt="editar"  (click)="editarServicios(element, templateCondicionesTecnicasServicios);"  tooltip="Editar servicio"
+                                        placement="bottom"  />&nbsp;<img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/borrar.png"  class="icono-tabla"  alt="borrar"  (click)="borrarServicios(element);"  tooltip="Borrar servicio"
+                                        placement="bottom"  /></td>
                             </div>
                             <ng-template #contenidoCTS>
                                 <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
@@ -300,8 +291,8 @@
     <div class="modal-header">
         <h4 class="modal-title pull-left">{{tituloModalCTB}}</h4>
         <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-    </button>
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
     <div class="modal-body">
         <div class="container">
@@ -357,16 +348,16 @@
                         <div class="col-md-6">
                             <label for="tipo-moneda">Tipo de moneda</label><span [hidden]="!emptyasteriscoCTB" class="asterisco-obligatorio">*</span>
                             <select id="tipoMonedaCTB" name="tipoMonedaCTB" formControlName="tipoMonedaCTB" class="form-control" [ngClass]="{ 'is-invalid': ctbSubmitted && f.tipoMonedaCTB.errors }">
-                <option value="">Seleccione</option>
-                <option value="ARS">ARS</option>
-                <option value="BRL">BRL</option>
-                <option value="CLP">CLP</option>
-                <option value="COP">COP</option>
-                <option value="EUR">EUR</option>
-                <option value="PEN">PEN</option>
-                <option value="UF">UF</option>
-                <option value="USD">USD</option>
-              </select>
+                  <option value="">Seleccione</option>
+                  <option value="ARS">ARS</option>
+                  <option value="BRL">BRL</option>
+                  <option value="CLP">CLP</option>
+                  <option value="COP">COP</option>
+                  <option value="EUR">EUR</option>
+                  <option value="PEN">PEN</option>
+                  <option value="UF">UF</option>
+                  <option value="USD">USD</option>
+                </select>
                             <div *ngIf="ctbSubmitted && f.tipoMonedaCTB.errors" class="invalid-feedback">
                                 <div *ngIf="f.tipoMonedaCTB.errors.required">Este campo es requerido</div>
                             </div>
@@ -381,10 +372,10 @@
                             <div class="col-md-12">
                                 <label for="ceco">Centro de costos / Orden de inversión</label>
                                 <select name="ceco" id="ceco" formControlName="cecoCTB" class="form-control" [ngClass]="{ 'is-invalid': ctbSubmitted && f.cecoCTB.errors }"> 
-                  <option value="">Seleccione</option>
-                  <option value="Centro de costos">Centro de costos</option>
-                  <option value="Orden de inversión">Orden de inversión</option>
-                </select>
+                    <option value="">Seleccione</option>
+                    <option value="Centro de costos">Centro de costos</option>
+                    <option value="Orden de inversión">Orden de inversión</option>
+                  </select>
                                 <div *ngIf="ctbSubmitted && f.cecoCTB.errors" class="invalid-feedback">
                                     <div *ngIf="f.cecoCTB.errors.required">Este campo es requerido</div>
                                 </div>
@@ -413,40 +404,31 @@
 
                 <div class="form-group">
                     <label for="adjunto">Adjunto</label>
-                    <<<<<<< HEAD <input id="adjuntoCTB" name="adjuntoCTB" formControlName="adjuntoCTB" type="file" class="form-control" (change)="subirAdjuntoCTB($event.target.files)" />
+                    <input id="adjuntoCTB" name="adjuntoCTB" formControlName="adjuntoCTB" type="file" class="form-control" (change)="subirAdjuntoCTB($event.target.files)" />
                     <br>
                     <div [hidden]="!mostrarAdjuntoCTB" class="adjunto-guardado">
-                        <<<<<<< HEAD <img src="https://isaempresas.sharepoint.com/sites/INTERNEXA/Solpes/ImagenesSolpes/aplicacion/file.png"  alt="adjunto">
+                        <img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/file.png"  alt="adjunto">
                             <a href="{{rutaAdjuntoCTB}}"  target="_blank">{{nombreAdjuntoCTB}}</a>
-                                =======
-                                <input id="adjuntoCTB" name="adjuntoCTB" formControlName="adjuntoCTB" type="file" class="form-control" (change)="subirAdjuntoCTB($event)" />
-                                <br>
-                                <div [hidden]="!mostrarAdjuntoCTB" class="adjunto-guardado">
-                                    <img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/file.png" alt="adjunto"><a href="{{rutaAdjuntoCTB}}" target="_blank">{{nombreAdjuntoCTB}}</a> >>>>>>> 4a765face914f80cdee19fb660327ce8a15f4e03
-                                    =======
-                                    <img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/file.png"  alt="adjunto">
-                                        <a href="{{rutaAdjuntoCTB}}"  target="_blank">{{nombreAdjuntoCTB}}</a>
-                                            >>>>>>> master
-                                </div>
                     </div>
-                    <div class="form-group">
-                        <label for="comentarios">Comentarios</label>
-                        <textarea id="comentariosCTB" name="comentariosCTB" formControlName="comentariosCTB" class="form-control" type="text" rows="3" placeholder="Escriba los comentarios"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">{{textoBotonGuardarCTB}} bien</button>
-                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="comentarios">Comentarios</label>
+                    <textarea id="comentariosCTB" name="comentariosCTB" formControlName="comentariosCTB" class="form-control" type="text" rows="3" placeholder="Escriba los comentarios"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">{{textoBotonGuardarCTB}} bien</button>
+                </div>
             </form>
-            </div>
         </div>
+    </div>
 </ng-template>
 
 <ng-template #templateCondicionesTecnicasServicios>
     <div class="modal-header">
         <h4 class="modal-title pull-left">{{tituloModalCTS}}</h4>
         <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
-      <span aria-hidden="true">&times;</span>
-    </button>
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
     <div class="modal-body">
         <div class="container">
@@ -481,16 +463,16 @@
                         <div class="col-md-6">
                             <label for="tipo-moneda">Tipo de moneda</label><span [hidden]="!emptyasteriscoCTS" class="asterisco-obligatorio">*</span>
                             <select id="tipoMonedaCTS" name="tipoMonedaCTS" formControlName="tipoMonedaCTS" class="form-control" [ngClass]="{ 'is-invalid': ctsSubmitted && f2.tipoMonedaCTS.errors }">
-                <option value="">Seleccione</option>
-                <option value="ARS">ARS</option>
-                <option value="BRL">BRL</option>
-                <option value="CLP">CLP</option>
-                <option value="COP">COP</option>
-                <option value="EUR">EUR</option>
-                <option value="PEN">PEN</option>
-                <option value="UF">UF</option>
-                <option value="USD">USD</option>
-              </select>
+                  <option value="">Seleccione</option>
+                  <option value="ARS">ARS</option>
+                  <option value="BRL">BRL</option>
+                  <option value="CLP">CLP</option>
+                  <option value="COP">COP</option>
+                  <option value="EUR">EUR</option>
+                  <option value="PEN">PEN</option>
+                  <option value="UF">UF</option>
+                  <option value="USD">USD</option>
+                </select>
                             <div *ngIf="ctsSubmitted && f2.tipoMonedaCTS.errors" class="invalid-feedback">
                                 <div *ngIf="f2.tipoMonedaCTS.errors.required">Este campo es requerido</div>
                             </div>
@@ -504,10 +486,10 @@
                             <div class="col-md-12">
                                 <label for="ceco">Centro de costos / Orden de inversión</label>
                                 <select name="cecoCTS" id="cecoCTS" formControlName="cecoCTS" class="form-control" [ngClass]="{ 'is-invalid': ctsSubmitted && f2.cecoCTS.errors }">
-                  <option value="">Seleccione</option>
-                  <option value="Centro de costos">Centro de costos</option>
-                  <option value="Orden de inversión">Orden de inversión</option>
-                </select>
+                    <option value="">Seleccione</option>
+                    <option value="Centro de costos">Centro de costos</option>
+                    <option value="Orden de inversión">Orden de inversión</option>
+                  </select>
                                 <div *ngIf="ctsSubmitted && f2.cecoCTS.errors" class="invalid-feedback">
                                     <div *ngIf="f2.cecoCTS.errors.required">Este campo es requerido</div>
                                 </div>
@@ -535,28 +517,22 @@
 
                 <div class="form-group">
                     <label for="adjunto">Adjunto</label>
-                    <<<<<<< HEAD <input id="adjuntoCTS" name="adjuntoCTS" formControlName="adjuntoCTS" type="file" class="form-control" (change)="subirAdjuntoCTS($event.target.files)" />
+                    <input id="adjuntoCTS" name="adjuntoCTS" formControlName="adjuntoCTS" type="file" class="form-control" (change)="subirAdjuntoCTS($event.target.files)" />
                     <div [hidden]="!mostrarAdjuntoCTS" class="adjunto-guardado">
-                        <<<<<<< HEAD <img src="https://isaempresas.sharepoint.com/sites/INTERNEXA/Solpes/ImagenesSolpes/aplicacion/file.png"  alt="adjunto">
-                            =======
-                            <input id="adjuntoCTS" name="adjuntoCTS" formControlName="adjuntoCTS" type="file" class="form-control" (change)="subirAdjuntoCTS($event)" />
-                            <div [hidden]="!mostrarAdjuntoCTS" class="adjunto-guardado">
-                                <img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/file.png" alt="adjunto"> >>>>>>> 4a765face914f80cdee19fb660327ce8a15f4e03 =======
-                                <img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/file.png"  alt="adjunto">
-                                    >>>>>>> master
-                                    <a href="{{rutaAdjuntoCTS}}" target="_blank">{{nombreAdjuntoCTS}}</a>
-                            </div>
+                        <img src="https://enovelsoluciones.sharepoint.com/sites/jam/solpes/ImagenesSolpes/aplicacion/file.png"  alt="adjunto">
+                            <a href="{{rutaAdjuntoCTS}}" target="_blank">{{nombreAdjuntoCTS}}</a>
                     </div>
-                    <div class="form-group">
-                        <label for="comentarios">Comentarios</label>
-                        <textarea id="comentariosCTS" name="comentariosCTS" formControlName="comentariosCTS" class="form-control" type="text" rows="3" placeholder="Escriba los comentarios"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">{{textoBotonGuardarCTS}} servicio</button>
-                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="comentarios">Comentarios</label>
+                    <textarea id="comentariosCTS" name="comentariosCTS" formControlName="comentariosCTS" class="form-control" type="text" rows="3" placeholder="Escriba los comentarios"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">{{textoBotonGuardarCTS}} servicio</button>
+                </div>
             </form>
-            </div>
         </div>
+    </div>
 </ng-template>
 
 <ng-template #templateConfirmacionDescartar>
