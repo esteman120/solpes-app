@@ -1,4 +1,5 @@
 export class Solicitud {
+    
     constructor(
         public titulo: string,
         public tipoSolicitud: string,
@@ -16,7 +17,7 @@ export class Solicitud {
         public justificacion: string,
         public condicionesContractuales: any,
         public estado?: string,
-        public responsable?: number,
+        public responsable?: any,
         public compraBienes?: boolean,
         public compraServicios?: boolean,
         public consecutivo?: number,
@@ -27,7 +28,8 @@ export class Solicitud {
         public id?: number,
         public FaltaRecepcionBienes?: boolean,
         public FaltaRecepcionServicios?: boolean,
-        public FueSondeo?: boolean) { }
+        public FueSondeo?: boolean,
+        public fechaCreacion?: Date) { }
 
     public static fromJson(element: any) {
         return new Solicitud(
@@ -35,30 +37,31 @@ export class Solicitud {
             element.TipoSolicitud, 
             element.CM, 
             element.Solicitante, 
-            element.Empresa, 
-            element.OrdenadorGastos, 
-            element.Pais, 
+            (element.Empresa != null) ? element.Empresa : null, 
+            (element.OrdenadorGastos != null) ? element.OrdenadorGastos : null, 
+            (element.Pais != null) ? element.Pais : null, 
             element.Categoria, 
             element.Subcategoria,
-            element.Comprador,
+            (element.Comprador != null) ? element.Comprador : null,
             element.CodigoAriba,
             element.FechaDeseadaEntrega, 
             element.Alcance, 
             element.Justificacion, 
             element.CondicionesContractuales, 
             element.Estado, 
-            element.Responsable,
+            (element.Responsable != null) ? element.Responsable : null,
             element.CompraBienes,
             element.CompraServicios,
             element.Consecutivo,
             element.AuthorId,
-            element.Responsable.Title,
+            (element.Responsable != null) ? element.Responsable.Title : null,
             element.OrdenEstadistica,
             element.NumeroOrdenEstadistica,
             element.ID,
             element.FaltaRecepcionBienes,
             element.FaltaRecepcionServicios,
-            element.FueSondeo);
+            element.FueSondeo,
+            element.FechaDeCreacion);
     }
 
     public static fromJsonList(elements: any) {

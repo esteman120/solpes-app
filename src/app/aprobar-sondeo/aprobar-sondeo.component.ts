@@ -90,8 +90,8 @@ export class AprobarSondeoComponent implements OnInit {
           console.log("perfilación correcta");
         }
         else {
-          // this.mostrarAdvertencia("Usted no está autorizado para esta acción: No es el responsable");
-          // this.router.navigate(['/mis-solicitudes']);
+          this.mostrarAdvertencia("Usted no está autorizado para esta acción: No es el responsable");
+          this.router.navigate(['/mis-solicitudes']);
         }
       }
       else {
@@ -150,8 +150,10 @@ export class AprobarSondeoComponent implements OnInit {
           Estado: this.estadoSolicitud,
           ResultadoSondeo: "Sondeo adicional",
           Resondear: true,
-          ComentarioSondeo: this.comentarioSondeo + '\n' + fechaFormateada + ' ' + this.usuario.nombre + ':' + ' ' + this.ComentarioSondeo
+          ComentarioSondeo: this.comentarioSondeo + '\n' + fechaFormateada + ' ' + this.usuario.nombre + ':' + ' ' + this.ComentarioSondeo,
+          FechaRevisarSondeo: fecha
         }
+      this.limpiarAdjuntosSolicitud();
       }
       else if (this.RDBsondeo === 2 && this.justificacionSondeo === undefined) {
         this.numeroSolpCm = '';
@@ -166,7 +168,8 @@ export class AprobarSondeoComponent implements OnInit {
             ResponsableId: this.ResponsableProceso,
             Estado: this.estadoSolicitud,
             ResultadoSondeo: "Convertir en SOLP",
-            Justificacion: this.justificacionSondeo
+            Justificacion: this.justificacionSondeo,
+            FechaRevisarSondeo: fecha
           }
         } else if (this.ObjCondicionesTecnicas.length === 0 && this.ObjCondicionesTecnicasServicios.length > 0) {
           this.ResponsableProceso = this.ObResProceso[0].porRegistrarSolp;
@@ -176,7 +179,8 @@ export class AprobarSondeoComponent implements OnInit {
             ResponsableId: this.ResponsableProceso,
             Estado: this.estadoSolicitud,
             ResultadoSondeo: "Convertir en SOLP",
-            Justificacion: this.justificacionSondeo
+            Justificacion: this.justificacionSondeo,
+            FechaRevisarSondeo: fecha
           }
         }
       }
@@ -185,7 +189,8 @@ export class AprobarSondeoComponent implements OnInit {
         ObjSondeo = {
           ResponsableId: null,
           Estado: this.estadoSolicitud,
-          ResultadoSondeo: "Descartar"
+          ResultadoSondeo: "Descartar",
+          FechaRevisarSondeo: fecha
         }
       }
       if (this.RDBsondeo === 4 && this.justificacionSondeo === undefined) {
@@ -195,22 +200,28 @@ export class AprobarSondeoComponent implements OnInit {
         if (this.ObjCondicionesTecnicas.length > 0) {
           this.ResponsableProceso = this.ObResProceso[0].porverificarMaterial;
           this.estadoSolicitud = 'Por verificar material';
+          this.numeroSolpCm = this.numeroSolpCm.valueOf();
           ObjSondeo = {
             TipoSolicitud: "Orden a CM",
             ResponsableId: this.ResponsableProceso,
             Estado: this.estadoSolicitud,
             ResultadoSondeo: "Convertir en CM",
-            Justificacion: this.justificacionSondeo
+            Justificacion: this.justificacionSondeo,
+            CM: this.numeroSolpCm,
+            FechaRevisarSondeo: fecha
           }
         } else if (this.ObjCondicionesTecnicas.length === 0 && this.ObjCondicionesTecnicasServicios.length > 0) {
           this.ResponsableProceso = this.ObResProceso[0].porRegistrarSolp;
           this.estadoSolicitud = 'Por registrar solp sap';
+          this.numeroSolpCm = this.numeroSolpCm.valueOf();
           ObjSondeo = {
             TipoSolicitud: "Orden a CM",
             ResponsableId: this.ResponsableProceso,
             Estado: this.estadoSolicitud,
             ResultadoSondeo: "Convertir en CM",
-            Justificacion: this.justificacionSondeo
+            Justificacion: this.justificacionSondeo,
+            CM: this.numeroSolpCm,
+            FechaRevisarSondeo: fecha
           }
         }
       }
@@ -226,7 +237,6 @@ export class AprobarSondeoComponent implements OnInit {
           this.servicio.agregarNotificacion(notificacion).then(
             (item: ItemAddResult) => {
               this.MostrarExitoso("La acción se ha guardado con éxito");
-              sessionStorage.removeItem("IdSolicitud");
               this.spinner.hide();
               setTimeout(() => {
                 this.salir();
@@ -244,6 +254,42 @@ export class AprobarSondeoComponent implements OnInit {
         }
       )
     }
+  }
+  limpiarAdjuntosSolicitud() {
+    
+    if(this.existeCondicionesTecnicasBienes){
+
+      this.ObjCondicionesTecnicas.forEach(
+        objCt =>{
+          if(objCt.adjunto !== null)
+          {                            
+            this.servicio.borrarAdjuntoCondicionesTecnicasBienes(objCt.adjunto.id, objCt.adjunto.filename).then(
+              (respuesta) => {
+                console.log('Se ha borrado el adjunto del sondeo Bienes');
+              }, err => {
+                console.log('Error al borrar el adjunto de bienes: ' + err);
+              }
+            )
+          }
+        }
+      );      
+    }
+    if(this.existeCondicionesTecnicasServicios){
+      this.ObjCondicionesTecnicasServicios.forEach(
+        objCt =>{
+        if(objCt.adjunto !== null)
+        { 
+          this.servicio.borrarAdjuntoCondicionesTecnicasServicios(objCt.id, objCt.adjunto).then(
+            (respuesta) => {
+              console.log('Se ha borrado el adjunto del sondeo Servicios');
+            }, err => {
+              console.log('Error al borrar el adjunto de servicios: ' + err);
+            }
+          )
+        }  
+      });
+    }
+  
   }
 
   private validarJustificacion() {
@@ -313,7 +359,7 @@ export class AprobarSondeoComponent implements OnInit {
         this.pais = solicitud.Pais.Title;
         this.paisId = solicitud.Pais.Id;
         this.categoria = solicitud.Categoria;
-        this.subCategoria = solicitud.Categoria;
+        this.subCategoria = solicitud.Subcategoria;
         this.comprador = solicitud.Comprador.Title;
         this.CompradorId = solicitud.Comprador.ID;
         this.alcance = solicitud.Alcance;        

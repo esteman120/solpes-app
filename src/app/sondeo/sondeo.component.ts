@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Compiler } from '@angular/core';
 import { SPServicio } from '../servicios/sp-servicio';
 import { CondicionContractual } from '../dominio/condicionContractual';
 import { CondicionesTecnicasBienes } from '../sondeo/condicionesTecnicasBienes';
@@ -25,9 +25,9 @@ export class SondeoComponent implements OnInit {
   contratoMarco: string;
   solicitante: string;
   ordenadorGasto: string;
-  panelOpenState1: string;
-  panelOpenState3: string;
-  panelOpenState2: string;
+  panelOpenState1: boolean;
+  panelOpenState3: boolean;
+  panelOpenState2: boolean;
   empresa: string;
   pais: string;
   categoria: string;
@@ -85,8 +85,8 @@ export class SondeoComponent implements OnInit {
           console.log("perfilación correcta");
         }
         else {
-          // this.mostrarAdvertencia("Usted no está autorizado para esta acción: No es el responsable");
-          // this.router.navigate(['/mis-solicitudes']);
+          this.mostrarAdvertencia("Usted no está autorizado para esta acción: No es el responsable");
+          this.router.navigate(['/mis-solicitudes']);
         }
       }
       else {
@@ -97,17 +97,17 @@ export class SondeoComponent implements OnInit {
   }
 
   verificarEstado(): boolean {
-    if(this.solicitudRecuperada.estado == 'Por sondear'){
+    if (this.solicitudRecuperada.estado == 'Por sondear') {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
 
-  verificarResponsable(): boolean{
-    if(this.solicitudRecuperada.responsable.ID == this.usuarioActual.id){
+  verificarResponsable(): boolean {
+    if (this.solicitudRecuperada.responsable.ID == this.usuarioActual.id) {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
@@ -143,7 +143,7 @@ export class SondeoComponent implements OnInit {
         this.pais = solicitud.Pais.Title;
         this.PaisId = solicitud.Pais.Id
         this.categoria = solicitud.Categoria;
-        this.subCategoria = solicitud.Categoria;
+        this.subCategoria = solicitud.Subcategoria;
         this.comprador = solicitud.Comprador.Title;
         this.alcance = solicitud.Alcance;
         this.justificacion = solicitud.Justificacion;
@@ -208,7 +208,7 @@ export class SondeoComponent implements OnInit {
             let nombreArchivo = "sondeoBienes-" + this.generarllaveSoporte() + "_" + this.ObjCondicionesTecnicasBienesGuardar[i].adjunto.name;
             this.servicio.agregarAdjuntoCondicionesTecnicasBienes(this.ObjCondicionesTecnicasBienesGuardar[i].IdBienes, nombreArchivo, this.ObjCondicionesTecnicasBienesGuardar[i].adjunto).then(
               (respuesta) => {
-                contador++
+                contador++;
                 if (contador === this.ObjCondicionesTecnicasBienesGuardar.length) {
                   this.MostrarExitoso("El sondeo de bienes se ha guardado correctamente");
                   if (this.ObjCondicionesTecnicasServiciosGuardar.length > 0) {
@@ -222,6 +222,14 @@ export class SondeoComponent implements OnInit {
                 this.spinner.hide();
               }
             )
+          }
+          else {
+            this.MostrarExitoso("El sondeo de bienes se ha guardado correctamente");
+            if (this.ObjCondicionesTecnicasServiciosGuardar.length > 0) {
+              this.GuardarSondeoServicios();
+            } else {
+              this.guardarComentarioEstado();
+            }
           }
         }
       ).catch(
@@ -262,14 +270,6 @@ export class SondeoComponent implements OnInit {
           return respuesta;
 
         }
-
-        if (this.ObjCondicionesTecnicasBienesGuardar[i].adjunto === null) {
-          this.mostrarAdvertencia("Debe adjuntar el archivo del sondeo para cada bien");
-          this.spinner.hide();
-          respuesta = false;
-          return respuesta;
-
-        }
       }
 
       for (let i = 0; i < this.ObjCondicionesTecnicasServiciosGuardar.length; i++) {
@@ -290,13 +290,6 @@ export class SondeoComponent implements OnInit {
 
         if (this.EsCampoVacio(this.ObjCondicionesTecnicasServiciosGuardar[i].codigo)) {
           this.mostrarAdvertencia("Hay algún código sin llenar en condiciones de servicios");
-          this.spinner.hide();
-          respuesta = false;
-          return respuesta;
-        }
-
-        if (this.ObjCondicionesTecnicasServiciosGuardar[i].adjunto === null) {
-          this.mostrarAdvertencia("Debe adjuntar el archivo del sondeo para cada servicio");
           this.spinner.hide();
           respuesta = false;
           return respuesta;
@@ -327,13 +320,6 @@ export class SondeoComponent implements OnInit {
           respuesta = false;
           return respuesta;
         }
-
-        if (this.ObjCondicionesTecnicasBienesGuardar[i].adjunto === null) {
-          this.mostrarAdvertencia("Debe adjuntar el archivo del sondeo para cada bien");
-          this.spinner.hide();
-          respuesta = false;
-          return respuesta;
-        }
       }
 
     } else {
@@ -356,13 +342,6 @@ export class SondeoComponent implements OnInit {
 
         if (this.EsCampoVacio(this.ObjCondicionesTecnicasServiciosGuardar[i].codigo)) {
           this.mostrarAdvertencia("Hay algún código sin llenar en condiciones de servicios");
-          this.spinner.hide();
-          respuesta = false;
-          return respuesta;
-        }
-
-        if (this.ObjCondicionesTecnicasServiciosGuardar[i].adjunto === null) {
-          this.mostrarAdvertencia("Debe adjuntar el archivo del sondeo para cada servicio");
           this.spinner.hide();
           respuesta = false;
           return respuesta;
@@ -403,6 +382,10 @@ export class SondeoComponent implements OnInit {
               }
             )
           }
+          else{
+            this.MostrarExitoso("El sondeo de servicios se ha guardado correctamente");
+            this.guardarComentarioEstado();
+          }
         }
       ).catch(
         (error) => {
@@ -421,6 +404,7 @@ export class SondeoComponent implements OnInit {
     let año = fecha.getFullYear();
     let fechaFormateada = dia + "/" + mes + "/" + año;
     let estado = "Por aprobar sondeo";
+    let fechaSondeo = new Date();
 
     if (this.comentarioSondeo == null || this.comentarioSondeo == undefined) {
       this.comentarioSondeo = "Comentarios: ";
@@ -432,7 +416,8 @@ export class SondeoComponent implements OnInit {
     ObjSondeo = {
       ResponsableId: this.autorId,
       Estado: estado,
-      ComentarioSondeo: this.comentarioSondeo + '\n' + fechaFormateada + ' ' + this.usuario.nombre + ':' + ' ' + this.ComentarioSolicitante
+      ComentarioSondeo: this.comentarioSondeo + '\n' + fechaFormateada + ' ' + this.usuario.nombre + ':' + ' ' + this.ComentarioSolicitante,
+      FechaSondeo: fechaSondeo
     }
 
     this.servicio.guardarRegSondeo(this.IdSolicitud, ObjSondeo).then(
@@ -441,7 +426,7 @@ export class SondeoComponent implements OnInit {
         let notificacion = {
           IdSolicitud: this.IdSolicitud.toString(),
           ResponsableId: this.autorId,
-          Estado: estado
+          Estado: estado,
         };
 
         this.servicio.agregarNotificacion(notificacion).then(

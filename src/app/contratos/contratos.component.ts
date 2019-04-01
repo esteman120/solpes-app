@@ -13,6 +13,8 @@ import { CondicionContractual } from '../dominio/condicionContractual';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ItemAddResult } from 'sp-pnp-js';
+import { Solicitud } from '../dominio/solicitud';
+import { Usuario } from '../dominio/usuario';
 
 @Component({
   selector: 'app-contratos',
@@ -35,7 +37,7 @@ export class ContratosComponent implements OnInit {
   IdSolicitud: any;
   autor: any;
   loading: boolean;
-  idSolicitudParameter: string;
+  idSolicitudParameter: number;
   CompraBienes: any;
   CompraServicios: any;
   paisId: any;
@@ -44,7 +46,6 @@ export class ContratosComponent implements OnInit {
   displayedColumns: string[] = ["codigo", "descripcion", "modelo", "fabricante", "cantidad", "valorEstimado", "moneda", "adjunto"];
   displayedColumnsTS: string[] = ["codigo", "descripcion", "cantidad", "valorEstimado", "moneda", "adjunto"];
   ObjCondicionesTecnicas: CondicionesTecnicasBienes[] = [];
-  ObjCTVerificar: any[];
   dataSource;
   dataSourceTS;
   panelOpenState = false;
@@ -71,14 +72,63 @@ export class ContratosComponent implements OnInit {
   OrdenEstadistica: any;
   numOrdenEstadistica: any;
   NumSolSAP: any;
+  solicitudRecuperada: Solicitud;
+  usuarioActual: Usuario;
+  perfilacion: boolean;
+  fueSondeo: boolean;
+  existeCondicionesTecnicasBienes: boolean;
+  existeCondicionesTecnicasServicios: boolean;
 
   constructor(private servicio: SPServicio, private modalServicio: BsModalService, private router: Router, public toastr: ToastrManager, private formBuilder: FormBuilder, private spinner: NgxSpinnerService) {
-    this.idSolicitudParameter = sessionStorage.getItem("IdSolicitud");
-    if(this.idSolicitudParameter == null){
+    this.usuarioActual = JSON.parse(sessionStorage.getItem('usuario'));
+    this.solicitudRecuperada = JSON.parse(sessionStorage.getItem('solicitud'));
+    console.log(this.solicitudRecuperada);
+    this.perfilacionEstado();
+    this.idSolicitudParameter = this.solicitudRecuperada.id;
+    this.existeCondicionesTecnicasBienes = false;
+    this.existeCondicionesTecnicasServicios = false;
+    this.Guardado = false;
+  }
+
+  private perfilacionEstado() {
+    if (this.solicitudRecuperada == null) {
       this.mostrarAdvertencia("No se puede realizar esta acción");
       this.router.navigate(['/mis-solicitudes']);
     }
-    this.Guardado = false;
+    else {
+      this.perfilacion = this.verificarEstado();
+      if (this.perfilacion) {
+        this.perfilacion = this.verificarResponsable();
+        if (this.perfilacion) {
+          console.log("perfilación correcta");
+          this.fueSondeo = this.solicitudRecuperada.FueSondeo;
+        }
+        else {
+          this.mostrarAdvertencia("Usted no está autorizado para esta acción: No es el responsable");
+          this.router.navigate(['/mis-solicitudes']);
+        }
+      }
+      else {
+        this.mostrarAdvertencia("La solicitud no se encuentra en el estado correcto para registrar contratos");
+        this.router.navigate(['/mis-solicitudes']);
+      }
+    }
+  }
+
+  verificarEstado(): boolean {
+    if (this.solicitudRecuperada.estado == 'Por registrar contratos') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  verificarResponsable(): boolean {
+    if (this.solicitudRecuperada.responsable.ID == this.usuarioActual.id) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   comfirmasalir(template: TemplateRef<any>) {
@@ -159,15 +209,17 @@ export class ContratosComponent implements OnInit {
             )
 
             this.servicio.ObtenerCondicionesTecnicasBienes(this.IdSolicitud).subscribe(RespuestaCondiciones => {
-              this.ObjCTVerificar = resultadoCondicionesTB.fromJsonList(RespuestaCondiciones);
-              if (this.ObjCTVerificar.length > 0) {
+              this.ObjCondicionesTecnicas = resultadoCondicionesTB.fromJsonList(RespuestaCondiciones);
+              if (this.ObjCondicionesTecnicas.length > 0) {
+                this.existeCondicionesTecnicasBienes = true;
                 this.CTB = true;
               }
-              this.dataSource = new MatTableDataSource(this.ObjCTVerificar);
+              this.dataSource = new MatTableDataSource(this.ObjCondicionesTecnicas);
               this.dataSource.paginator = this.paginator;
               this.servicio.ObtenerCondicionesTecnicasServicios(this.IdSolicitud).subscribe(RespuestaCondicionesServicios => {
                 this.ObjCondicionesTecnicasServicios = resultadoCondicionesTS.fromJsonList(RespuestaCondicionesServicios);
                 if (this.ObjCondicionesTecnicasServicios.length > 0) {
+                  this.existeCondicionesTecnicasServicios = true;
                   this.CTS = true;
                 }
                 this.dataSourceTS = new MatTableDataSource(this.ObjCondicionesTecnicasServicios);
@@ -189,6 +241,7 @@ export class ContratosComponent implements OnInit {
       return;
     }
     this.spinner.show();
+    let fechaContrato = new Date();
     let TipoContrato = this.ContratosForm.controls["TipoContrato"].value;
     let SolpSapRfp = this.ContratosForm.controls["SolpSapRfp"].value;
     let ContratoOC = this.ContratosForm.controls["ContratoOC"].value;
@@ -237,7 +290,8 @@ export class ContratosComponent implements OnInit {
         Solicitante: Solicitante,
         Comprador: Comprador,
         ObservacionesAdicionales: ObervacionesAdicionales,
-        SolicitudId: this.idSolicitudParameter
+        SolicitudId: this.idSolicitudParameter,
+        FechaDeCreacion: fechaContrato
       }
     } else {
       ObjContrato = {
@@ -262,7 +316,9 @@ export class ContratosComponent implements OnInit {
         Solicitante: Solicitante,
         Comprador: Comprador,
         ObservacionesAdicionales: ObervacionesAdicionales,
-        SolicitudId: this.idSolicitudParameter
+        SolicitudId: this.idSolicitudParameter,
+        FechaDeCreacion: fechaContrato
+
       }
     }
 
@@ -271,23 +327,32 @@ export class ContratosComponent implements OnInit {
         this.Guardado = true;
         this.servicio.cambioEstadoSolicitud(this.IdSolicitud, "Por recepcionar", this.autor).then(
           (resultado) => {
-            let notificacion = {
-              IdSolicitud: this.IdSolicitud.toString(),
-              ResponsableId: this.autor,
-              Estado: 'Por recepcionar'
-            };
-            this.servicio.agregarNotificacion(notificacion).then(
-              (item: ItemAddResult) => {
-                this.MostrarExitoso("El contrato se ha guardado correctamente");
-                this.spinner.hide();
-                setTimeout(() => {
-                  this.router.navigate(["/mis-pendientes"]);
-                }, 1000);
-              }, err => {
-                this.mostrarError('Error agregando la notificación');
-                this.spinner.hide();
-              }
-            )
+           
+            this.servicio.actualizarFechaContratos(this.IdSolicitud, ContratoOC).then(
+              ()=> {
+
+                let notificacion = {
+                  IdSolicitud: this.IdSolicitud.toString(),
+                  ResponsableId: this.autor,
+                  Estado: 'Por recepcionar'                  
+                }
+                this.servicio.agregarNotificacion(notificacion).then(
+                  (item: ItemAddResult) => {
+                    this.MostrarExitoso("El contrato se ha guardado correctamente");
+                    this.spinner.hide();
+                    setTimeout(() => {
+                      this.router.navigate(["/mis-pendientes"]);
+                    }, 1000);
+                  }, err => {
+                    this.mostrarError('Error agregando la notificación');
+                    this.spinner.hide();
+                  }
+                )
+              },
+              (error)=>{
+                console.error(error);
+              }              
+            ) 
           }
         ).catch(
           (error) => {
@@ -306,9 +371,9 @@ export class ContratosComponent implements OnInit {
   ValidarIva() {
     let Moneda = this.ContratosForm.controls["MonedaContrato"].value;
     const IvaContrato = this.ContratosForm.get('IvaContrato');
-   
+
     IvaContrato.setValidators([Validators.required]);
-    
+
     IvaContrato.updateValueAndValidity();
   }
 
@@ -316,9 +381,7 @@ export class ContratosComponent implements OnInit {
     this.modalRef.hide();
     this.router.navigate(["/mis-pendientes"]);
   }
-
   onSelect(event: any): void {
-    console.log("Sfs");
     this.selectedOption = event.item;
   }
 

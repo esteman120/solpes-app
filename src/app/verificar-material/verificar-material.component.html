@@ -200,7 +200,7 @@
                             <tbody>
                                 <tr *ngFor="let item of condicionesContractuales">
                                     <td>{{item.campo}}</td>
-                                    <td>{{item.descripcion}}</td>
+                                    <td><textarea class="form-control" id="exampleFormControlTextarea1"  readonly>{{item.descripcion}}</textarea></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -288,7 +288,7 @@
                                     <td>{{item.descripcion}}</td>
                                     <td>{{item.cantidadSondeo | number}}</td>
                                     <td>{{item.precioSondeo | number}}</td>
-                                    <td>{{item.moneda}}</td>
+                                    <td>{{item.monedaSondeo}}</td>
                                     <td>{{item.comentarioSondeo}}</td>
                                     <td>
                                         <ng-container *ngIf="item.adjunto != null; else nohaySondeobien">
@@ -353,7 +353,7 @@
                         <div class="col-md-6">
                             <label for="existencias">Existencias</label>
                             <input type="text" id="existenciasVerificar" name="existenciasVerificar" numbersOnly formControlName="existenciasVerificar" class="form-control" [ngClass]="{ 'is-invalid': verificarSubmitted && f.existenciasVerificar.errors }" placeholder="Escriba las existencias"
-                                (change)="RestaCantidadReserva()" />
+                                (ngModelChange)="RestaCantidadReserva($event)" />
                             <div *ngIf="verificarSubmitted && f.existenciasVerificar.errors" class="invalid-feedback">
                                 <div *ngIf="f.existenciasVerificar.errors.cantidadMenor">Las existencias no pueden ser mayores a la cantidad
                                 </div>

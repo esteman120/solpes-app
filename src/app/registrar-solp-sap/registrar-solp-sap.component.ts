@@ -60,7 +60,6 @@ export class RegistrarSolpSapComponent implements OnInit {
   paisId: any;
   ObResProceso: responsableProceso[] = [];
   Autor: any;
-  ObjCTVerificar: any[];
   dataSource;
   dataSourceTS;
   CTS: boolean;
@@ -102,8 +101,8 @@ export class RegistrarSolpSapComponent implements OnInit {
           console.log("perfilación correcta");
         }
         else {
-          // this.mostrarAdvertencia("Usted no está autorizado para esta acción: No es el responsable");
-          // this.router.navigate(['/mis-solicitudes']);
+          this.mostrarAdvertencia("Usted no está autorizado para esta acción: No es el responsable");
+          this.router.navigate(['/mis-solicitudes']);
         }
       }
       else {
@@ -146,7 +145,7 @@ export class RegistrarSolpSapComponent implements OnInit {
         this.pais = solicitud.Pais.Title;
         this.paisId = solicitud.Pais.Id;
         this.categoria = solicitud.Categoria;
-        this.subCategoria = solicitud.Categoria;
+        this.subCategoria = solicitud.Subcategoria;
         this.compradorNombre = solicitud.Comprador.Title;
         this.comprador = solicitud.Comprador.ID;
         this.alcance = solicitud.Alcance;
@@ -167,20 +166,19 @@ export class RegistrarSolpSapComponent implements OnInit {
         }
 
         if (solicitud.CondicionesContractuales != null) {
+         console.log(solicitud.CondicionesContractuales);
           this.condicionesContractuales = JSON.parse(solicitud.CondicionesContractuales).condiciones;
+          console.log(this.condicionesContractuales);
         }
 
         this.servicio.ObtenerCondicionesTecnicasBienes(this.IdSolicitud).subscribe(
           RespuestaCondiciones => {
             if (RespuestaCondiciones.length > 0) {
+              this.CTB = true;
               this.existenBienes = true;
               this.ObjCondicionesTecnicasBienesLectura = CondicionesTecnicasBienes.fromJsonList(RespuestaCondiciones);
               this.ObjCondicionesTecnicas = CondicionesTecnicasBienes.fromJsonList(RespuestaCondiciones);
               this.ObjResultadosondeo = CondicionesTecnicasBienes.fromJsonList(RespuestaCondiciones);
-              this.ObjCTVerificar = resultadoCondicionesTB.fromJsonList(RespuestaCondiciones);
-              if (this.ObjCTVerificar.length > 0) {
-                this.CTB = true;
-              }
               this.dataSource = new MatTableDataSource(this.ObjCondicionesTecnicas);
               this.dataSource.paginator = this.paginator;
             }
@@ -213,6 +211,7 @@ export class RegistrarSolpSapComponent implements OnInit {
 
   GuardarSolSAP() {
     this.spinner.show();
+    let fechaSolpSap = new Date();
     let ObjSolpSap;
     if (this.RDBOrdenadorGastos === undefined) {
       this.mostrarAdvertencia("Debe seleccionar una acción en ordenador de gastos");
@@ -231,7 +230,9 @@ export class RegistrarSolpSapComponent implements OnInit {
           ResponsableId: this.ResponsableProceso,
           Estado: this.estadoSolicitud,
           EstadoRegistrarSAP: "Aprobado",
-          NumSolSAP: this.numeroSolpSap
+          NumSolSAP: this.numeroSolpSap,
+          ComentarioRegistrarSAP: this.ComentarioRegistrarSap,
+          FechaRegistrarSolpsap: fechaSolpSap
         }
       }
       else if (this.RDBOrdenadorGastos === 2 && this.ComentarioRegistrarSap === undefined) {
@@ -244,7 +245,8 @@ export class RegistrarSolpSapComponent implements OnInit {
           ResponsableId: this.ResponsableProceso,
           Estado: this.estadoSolicitud,
           EstadoRegistrarSAP: "Rechazado",
-          ComentarioRegistrarSAP: this.ComentarioRegistrarSap
+          ComentarioRegistrarSAP: this.ComentarioRegistrarSap,
+          FechaRegistrarSolpsap: fechaSolpSap
         }
       }
       else if (this.RDBOrdenadorGastos === 3 && this.ComentarioRegistrarSap === undefined) {
@@ -257,7 +259,8 @@ export class RegistrarSolpSapComponent implements OnInit {
           ResponsableId: this.ResponsableProceso,
           Estado: this.estadoSolicitud,
           EstadoRegistrarSAP: "No tiene presupuesto disponible",
-          ComentarioRegistrarSAP: this.ComentarioRegistrarSap
+          ComentarioRegistrarSAP: this.ComentarioRegistrarSap,
+          FechaRegistrarSolpsap: fechaSolpSap
         }
       }
       this.servicio.guardarSOLPSAP(this.IdSolicitud, ObjSolpSap).then(

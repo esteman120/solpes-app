@@ -106,8 +106,8 @@ export class VerificarMaterialComponent implements OnInit {
           console.log("perfilación correcta");
         }
         else {
-          // this.mostrarAdvertencia("Usted no está autorizado para esta acción: No es el responsable");
-          // this.router.navigate(['/mis-solicitudes']);
+          this.mostrarAdvertencia("Usted no está autorizado para esta acción: No es el responsable");
+          this.router.navigate(['/mis-solicitudes']);
         }
       }
       else {
@@ -159,7 +159,8 @@ export class VerificarMaterialComponent implements OnInit {
       this.EsSondeo = solicitud.FueSondeo;
       this.MostrarNumeroEstadistica();
       if (solicitud.CondicionesContractuales != null) {
-        this.condicionesContractuales = JSON.parse(solicitud.CondicionesContractuales).condiciones;
+      // this.condicionesContractuales = JSON.parse(solicitud.CondicionesContractuales).condiciones;
+      this.condicionesContractuales = JSON.parse(solicitud.CondicionesContractuales.replace(/(\r\n|\n|\r|\t)/gm, "")).condiciones;
       }
       this.servicio.ObtenerCondicionesTecnicasBienes(this.IdSolicitud).subscribe(RespuestaCondiciones => {
         if (RespuestaCondiciones.length > 0) {
@@ -203,6 +204,7 @@ export class VerificarMaterialComponent implements OnInit {
 
   GuardarComentario() {
     this.spinner.show();
+    let fechaVerificar = new Date();
     let coment;
     let comentarios = this.ComentarioVerificarMaterial;
     if (this.SwtichOrdenEstadistica === true) {
@@ -218,7 +220,8 @@ export class VerificarMaterialComponent implements OnInit {
         Estado: this.estadoSolicitud,
         ResponsableId: this.ResponsableProceso,
         ComentarioVerificarMaterial: comentarios,
-        FaltaRecepcionBienes: this.SwtichFaltaRecepcionBienes
+        FaltaRecepcionBienes: this.SwtichFaltaRecepcionBienes,
+        FechaVerificarMaterial: fechaVerificar
       }
     } else {
       this.ResponsableProceso = this.ObjResponsableProceso[0].porRegistrarSolp;
@@ -228,7 +231,8 @@ export class VerificarMaterialComponent implements OnInit {
         Estado: this.estadoSolicitud,
         ResponsableId: this.ResponsableProceso,
         ComentarioVerificarMaterial: comentarios,
-        FaltaRecepcionBienes: this.SwtichFaltaRecepcionBienes
+        FaltaRecepcionBienes: this.SwtichFaltaRecepcionBienes,
+        FechaVerificarMaterial: fechaVerificar
       }
     }
     let cantidad = this.ObjCTVerificar.filter(x => x.MaterialVerificado === true).length;
@@ -445,7 +449,8 @@ export class VerificarMaterialComponent implements OnInit {
   }
 
 
-  RestaCantidadReserva() {
+  RestaCantidadReserva(evento) {
+    console.log(evento);
     let Existencia: number = this.verificarMaterialFormulario.controls["existenciasVerificar"].value;
     let Cantidad: number = this.verificarMaterialFormulario.controls["cantidadVerificar"].value;
 
